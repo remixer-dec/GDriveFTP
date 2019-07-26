@@ -1,0 +1,36 @@
+{
+  "name": "gdriveftp",
+  "version": "1.0.0",
+  "description": "A read-only FTP Server for Google Drive public folders",
+  "main": "gdftp.js",
+  "dependencies": {
+    "follow-redirects": "^1.7.0",
+    "ftp-srv": "^4.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "return true"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/remixer-dec/GDriveFTP.git"
+  },
+  "keywords": [
+    "FTP",
+    "GoogleDrive",
+    "FTPServer",
+    "Google",
+    "Drive",
+    "FTP",
+    "GDriveFTP"
+  ],
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "author": "Remixer Dec",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/remixer-dec/GDriveFTP/issues"
+  },
+  "homepage": "https://github.com/remixer-dec/GDriveFTP#readme"
+}

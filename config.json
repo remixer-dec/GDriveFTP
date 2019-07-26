@@ -1,0 +1,10 @@
+{
+    "blacklist":["RMD","RMDA","RNFR","RNTO","MKD","XMKD","DELE","AVBL","MFCT","MFF","MFMT","SMNT"],
+    "url":"ftp://0.0.0.0:21021",
+    "pasv_url":"0.0.0.0",
+    "pasv_min":21022,
+    "pasv_max":31033,
+    "greeting":"Welcome to GDrive FTP server!",
+    "fid_in_username":true,
+    "folders":[]
+}
