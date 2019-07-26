@@ -20,7 +20,9 @@ This project's FTP Server is compatible with: Chrome, Firefox, Windows Explorer,
 Node.js, npm  
 
 ### Installation:  
-```npm i gdriveftp```  
+```git clone https://github.com/remixer-dec/GDriveFTP```
+```cd GDriveFTP```  
+```npm i```  
 
 ### Usage:  
 1) configure server in ```config.json```  
@@ -34,6 +36,15 @@ You can read more about FTP Server configuration [here](https://github.com/trs/f
 {"id":"LINK_TO_GDRIVE_FOLDER_OR_ID_OF_THAT_FOLDER","name":"ANY_FOLDER_NAME"}
 ```  
 use `,` to separate multiple folders
+  
+### Using as a module:  
+```npm i gdriveftp```
+```javascript
+const gdftp = require('gdriveftp')
+gdftp.server.listen()
+console.log(Object.keys(gdftp))
+```    
+you can access all internal classes and objects, including GDParser from imported module  
 
 ### Troubleshooting:  
 if you have connection issues, try to change IP/port or set IP configuration directly to your network interface's IP address.  

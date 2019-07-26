@@ -158,8 +158,18 @@ ftpServer.on('data', (d) => {
 
 // RELEASE:
 ftpServer = new FtpSrv(CFG)
-
-ftpServer.listen()
+if (!module.parent) {
+    ftpServer.listen()
+}
 ftpServer.on('login', ({connection, username, password}, resolve, reject) => {
     resolve({fs:new GDriveFS(connection),cwd:'/'})
 });
+
+module.exports =
+{
+    server: ftpServer,
+    configuration:CFG,
+    GDriveFS: GDriveFS,
+    GDParser: G,
+    FtpSrv:FtpSrv
+}
