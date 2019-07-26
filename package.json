@@ -1,6 +1,6 @@
 {
   "name": "gdriveftp",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A read-only FTP Server for Google Drive public folders",
   "main": "gdftp.js",
   "dependencies": {

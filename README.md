@@ -20,7 +20,7 @@ This project's FTP Server is compatible with: Chrome, Firefox, Windows Explorer,
 Node.js, npm  
 
 ### Installation:  
-```git clone https://github.com/remixer-dec/GDriveFTP```
+```git clone https://github.com/remixer-dec/GDriveFTP```  
 ```cd GDriveFTP```  
 ```npm i```  
 
@@ -36,7 +36,7 @@ You can read more about FTP Server configuration [here](https://github.com/trs/f
 {"id":"LINK_TO_GDRIVE_FOLDER_OR_ID_OF_THAT_FOLDER","name":"ANY_FOLDER_NAME"}
 ```  
 use `,` to separate multiple folders
-  
+
 ### Using as a module:  
 ```npm i gdriveftp```
 ```javascript
