@@ -10,12 +10,14 @@ G.init(CFG.folders)
 class GDriveFS extends FileSystem {
   constructor(connection, {root, cwd} = {}) {
       super(connection, root, cwd);
+      let cfg = connection.cfg || CFG
+      this.cfg = cfg
       this.connection = connection;
-      this._root = CFG.fid_in_username ? G.parseFolderID(connection.username) : false
+      this._root = cfg.fid_in_username ? G.parseFolderID(connection.username) : false
       this.cwd = cwd ? cwd : this._root
       this.realCWD = '/'
-      G.init(CFG.folders)
-      if(CFG.fid_in_username && connection.username != lastuser){
+      G.init(cfg.folders)
+      if(cfg.fid_in_username && connection.username != lastuser){
           G.allFiles = []
           lastuser = connection.username
       }
@@ -95,10 +97,13 @@ class GDriveFS extends FileSystem {
           rdir = true
       }
       return G.parseFolder(cwd)
-      .then(f=>G.addToList(this.realCWD,(rdir?[].concat(G.init(CFG.folders),f):f)))
-      .catch(e=>{let x=G.allFiles[this.realCWD];return (rdir?[].concat(G.init(CFG.folders),x?x:[]):x)})
+      .then(f=>G.addToList(this.realCWD,(rdir?[].concat(G.init(this.cfg.folders),f):f)))
+      .catch(e=>{let x=G.allFiles[this.realCWD];return (rdir?[].concat(G.init(this.cfg.folders),x?x:[]):x)})
   }
   chdir(path = '.') {
+      if(path == '/../'){
+          path = 'nosuchdirectory'
+      }
       if(path[0] != '/'){
           path = p.posix.resolve(this.realCWD, path);
       }
@@ -165,11 +170,22 @@ ftpServer.on('login', ({connection, username, password}, resolve, reject) => {
     resolve({fs:new GDriveFS(connection),cwd:'/'})
 });
 
-module.exports =
-{
-    server: ftpServer,
-    configuration:CFG,
+module.exports = {
+    DEFAULT_SERVER: ftpServer,
+    DEFAULT_CONFIGURATION:CFG,
     GDriveFS: GDriveFS,
     GDParser: G,
-    FtpSrv:FtpSrv
+    FtpSrv:FtpSrv,
+    GDFtpServer:function(configuration,loginCheck=(c,u,p)=>1){
+        let ftpServer = new FtpSrv({...CFG,...configuration})
+        ftpServer.on('login', ({connection, username, password}, resolve, reject) => {
+            if(loginCheck(connection,username,password)){
+                connection.cfg = {...CFG,...configuration}
+                resolve({fs:new GDriveFS(connection),cwd:'/'})
+            } else {
+                reject()
+            }
+        });
+        return ftpServer
+    }
 }

@@ -41,10 +41,14 @@ use `,` to separate multiple folders
 ```npm i gdriveftp```
 ```javascript
 const gdftp = require('gdriveftp')
-gdftp.server.listen()
+//run default server with default configuration  
+gdftp.DEFAULT_SERVER.listen()  
+//or create another server instance with custom configuration  
+const srv = gdftp.GDFtpServer({url:'ftp://192.168.1.77:21234', pasv_url:'192.168.1.77', fid_in_username:false, folders:[]})  
+srv.listen()  
+//you can access all internal classes and objects, including GDParser from imported module  
 console.log(Object.keys(gdftp))
 ```    
-you can access all internal classes and objects, including GDParser from imported module  
 
 ### Troubleshooting:  
 if you have connection issues, try to change IP/port or set IP configuration directly to your network interface's IP address.  

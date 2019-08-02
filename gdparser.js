@@ -3,7 +3,7 @@ const https = require('follow-redirects').https;
 const url = require('url')
 
 const datargxp = /window\['[^']+'] = '([^']{10,})';/m
-const keyregexp = /^[^"]+"([A-z0-9_-]+)".+client-channel/m
+const keyrgxp = /^[^"]+"([A-z0-9_-]+)".+client-channel/m
 class File{
     constructor(type,id,name,size,d){
         this.isFolder = type === 'application/vnd.google-apps.folder'
@@ -25,12 +25,15 @@ class GDParser{
     constructor(){
         this.allFiles = []
     }
+    safeASCIIDecode(str){
+        let r = /\\x([\d\w]{2})/gi
+        return str.replace(r, (match, grp)=>String.fromCharCode(parseInt(grp, 16))).replace(/\\n/g,'');
+    }
     parseData(rawhtml){
         let data = rawhtml.match(datargxp)
         let files = []
         if(data){
-            data = JSON.parse(eval(`'${data[1]}'`));
-            //this is the fastest way to decode \xb5 symbols, unescape and decodeURIComponent doesn't work
+            data = JSON.parse(this.safeASCIIDecode(data[1]));
             data = data ? data[0] : []
             if(!data){data = []}
             for(let i=0,l=data.length;i<l;i++){
@@ -58,8 +61,29 @@ class GDParser{
 
             return new Promise((rs,rj)=>{
                 https.get(link, function(res) {
-                    rs({stream:stream})
-                    res.pipe(stream)
+                    //detect and confirm filesize warning
+                    if(res.responseUrl == link){
+                            let html = ''
+                            let confirmcode = res.headers['set-cookie'].map(s=>s.match(/^[^;]+/)).join('; ')
+                            res.on('data',(chunk)=>{
+                                html+=chunk
+                            })
+                            res.on('end',(ev)=>{
+                                let confirmUrl = html.match(/[^"]+confirm=[^"]+/m)[0].replace(/amp;/g,'')
+                                let opts = {
+                                    host: 'drive.google.com',
+                                    path: confirmUrl,
+                                    headers: {'cookie':confirmcode}
+                                }
+                                https.get(opts, function(cres) {
+                                    rs({stream:stream})
+                                    cres.pipe(stream)
+                                })
+                            })
+                    } else {
+                        rs({stream:stream})
+                        res.pipe(stream)
+                    }
                 });
             })
         } catch(e){console.error(e)}
@@ -96,7 +120,7 @@ class GDParser{
             let data = await this.httpsrq(link)
             let pagefiles = this.parseData(data)
             if(pagefiles.length >= 50){
-                let key = data.match(keyregexp)[1];
+                let key = data.match(keyrgxp)[1];
                 let pagedata = JSON.parse(await this.nextpage(folderID,key,''))
                 for(let file of pagedata.items){
                     pagefiles.push(new File(file.mimeType,file.id,file.title,parseInt(file.fileSize),new Date(file.modifiedDate)))
